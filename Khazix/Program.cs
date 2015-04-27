@@ -11,7 +11,7 @@ namespace Khazix
 {
     class Program
     {
-        private static string Name = "Khazix";
+        private static string Name = "Tristana";
         private static Obj_AI_Hero Player = ObjectManager.Player;
         private static Orbwalking.Orbwalker Orbwalker;
         private static Spell Q, W, E, R;
@@ -44,7 +44,7 @@ namespace Khazix
             E.SetSkillshot(0.25f, 100f, 1000f, false, SkillshotType.SkillshotCircle);
 
             // Root Menu
-            config = new Menu("Khazix", "Khazix", true);
+            config = new Menu(Player.ChampionName, Player.ChampionName, true);
 
             // Target Selector
             var tsMenu = new Menu("Target Selector", "Target Selector");
@@ -86,28 +86,28 @@ namespace Khazix
 
             if (config.Item("JumpCursor").GetValue<KeyBind>().Active && E.IsReady())
             {
-                JumpExploit(JumpType.ToCursor);
+                JumpExploit(JumpType.ToCursor, W);
             }
 
             if (config.Item("JumpHome").GetValue<KeyBind>().Active && E.IsReady())
             {
-                JumpExploit(JumpType.ToHome);
+                JumpExploit(JumpType.ToHome, W);
             }
         }
 
-        private static void JumpExploit(JumpType type)
+        private static void JumpExploit(JumpType type, Spell s)
         {
             Vector3 myPos = Player.ServerPosition;
             Vector3 castPos;
 
             if (type == JumpType.ToCursor)
-                castPos = myPos - (myPos - Game.CursorPos).Normalized() * E.Range;
+                castPos = myPos - (myPos - Game.CursorPos).Normalized() * s.Range;
             else
-                castPos = myPos - (myPos - GetHomePos(Player.Team)).Normalized() * E.Range;
+                castPos = myPos - (myPos - GetHomePos(Player.Team)).Normalized() * s.Range;
 
-            E.Cast(castPos);
+            s.Cast(castPos);
             Utility.DelayAction.Add(600,
-                () => E.Cast(Game.CursorPos));
+                () => s.Cast(Game.CursorPos));
         }
 
         private static Vector3 GetHomePos(GameObjectTeam team)
