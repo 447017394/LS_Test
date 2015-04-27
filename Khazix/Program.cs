@@ -40,8 +40,9 @@ namespace Khazix
             E = NewSpell(Ei);
             R = NewSpell(Ri);
 
-            W.SetSkillshot(0.225f, 80f, 828.5f, true, SkillshotType.SkillshotLine);
-            E.SetSkillshot(0.25f, 100f, 1000f, false, SkillshotType.SkillshotCircle);
+            //W.SetSkillshot(0.225f, 80f, 828.5f, true, SkillshotType.SkillshotLine);
+            //E.SetSkillshot(0.25f, 100f, 1000f, false, SkillshotType.SkillshotCircle);
+            W.SetSkillshot(0.25f, 100f, 1000f, false, SkillshotType.SkillshotCircle);
 
             // Root Menu
             config = new Menu(Player.ChampionName, Player.ChampionName, true);
@@ -72,7 +73,7 @@ namespace Khazix
             Game.OnUpdate += Game_OnUpdate;
             Drawing.OnDraw += Drawing_OnDraw;
 
-            Game.PrintChat("Khazix Loaded.");
+            Game.PrintChat(Player.ChampionName + " Loaded.");
         }
 
         private static void Drawing_OnDraw(EventArgs args)
@@ -101,9 +102,9 @@ namespace Khazix
             Vector3 castPos;
 
             if (type == JumpType.ToCursor)
-                castPos = myPos - (myPos - Game.CursorPos).Normalized() * s.Range;
+                castPos = myPos - (myPos - Game.CursorPos).Normalized() * W.Range;
             else
-                castPos = myPos - (myPos - GetHomePos(Player.Team)).Normalized() * s.Range;
+                castPos = myPos - (myPos - GetHomePos(Player.Team)).Normalized() * W.Range;
 
             W.Cast(castPos);
             Utility.DelayAction.Add(600,
