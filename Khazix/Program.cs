@@ -11,10 +11,10 @@ namespace Khazix
 {
     class Program
     {
-        private static string Name = "Tristana";
-        private static Obj_AI_Hero Player = ObjectManager.Player;
+        private static string Name = "Khazix";
+        private static Obj_AI_Hero Player;
         private static Orbwalking.Orbwalker Orbwalker;
-        private static Spell Q, W, E, R;
+        private static Spell Q, W, E, R, JumpSpell; // JumpSpell is WIP. Not using now.
         private static SpellDataInst Qi, Wi, Ei, Ri;
         private static Menu config;
 
@@ -28,7 +28,11 @@ namespace Khazix
             Player = ObjectManager.Player;
 
             if (Player.BaseSkinName != Name)
+            {
+                Game.PrintChat("Only Support " + Name + ".");
+                CustomEvents.Game.OnGameLoad -= Game_OnGameLoad; // Clean It.
                 return;
+            }
 
             Qi = Player.Spellbook.GetSpell(SpellSlot.Q);
             Wi = Player.Spellbook.GetSpell(SpellSlot.W);
@@ -40,10 +44,10 @@ namespace Khazix
             E = NewSpell(Ei);
             R = NewSpell(Ri);
 
-            //W.SetSkillshot(0.225f, 80f, 828.5f, true, SkillshotType.SkillshotLine);
-            //E.SetSkillshot(0.25f, 100f, 1000f, false, SkillshotType.SkillshotCircle);
-            W.SetSkillshot(0.25f, 100f, 1000f, false, SkillshotType.SkillshotCircle);
+            W.SetSkillshot(0.225f, 80f, 828.5f, true, SkillshotType.SkillshotLine);
+            E.SetSkillshot(0.25f, 100f, 1000f, false, SkillshotType.SkillshotCircle);
 
+            #region Menu
             // Root Menu
             config = new Menu(Player.ChampionName, Player.ChampionName, true);
 
@@ -53,7 +57,7 @@ namespace Khazix
             config.AddSubMenu(tsMenu);
 
             // Orbwalker
-            if (config.Item("UseOrbwalker") == null || config.Item("UseOrbwalker").GetValue<bool>())
+            if (config.Item("UseOrbwalker").GetValue<bool>())
             {
                 config.AddSubMenu(new Menu("Orbwalking", "Orbwalking"));
                 Orbwalker = new Orbwalking.Orbwalker(config.SubMenu("Orbwalking"));
@@ -66,9 +70,10 @@ namespace Khazix
                 keys.AddItem(new MenuItem("JumpHome", "Jump To Home").SetValue(new KeyBind('G', KeyBindType.Press)));
             }
 
-            config.AddItem(new MenuItem("UseOrbwalker", "Use Orbwalker (Need Reload)").SetValue(false));
+            config.AddItem(new MenuItem("UseOrbwalker", "Use Orbwalker (Need Reload)").SetValue(true));
 
             config.AddToMainMenu();
+            #endregion Menu
 
             Game.OnUpdate += Game_OnUpdate;
             Drawing.OnDraw += Drawing_OnDraw;
@@ -85,30 +90,32 @@ namespace Khazix
         {
             if (Player.IsDead) return;
 
-            if (config.Item("JumpCursor").GetValue<KeyBind>().Active && E.IsReady())
+            if (config.Item("JumpCursor").IsActive())
             {
-                JumpExploit(JumpType.ToCursor);
+                Jump(JumpType.ToCursor);
             }
 
-            if (config.Item("JumpHome").GetValue<KeyBind>().Active && E.IsReady())
+            if (config.Item("JumpHome").IsActive())
             {
-                JumpExploit(JumpType.ToHome);
+                Jump(JumpType.ToHome);
             }
         }
 
-        private static void JumpExploit(JumpType type)
+        private static void Jump(JumpType type)
         {
+            if (!E.IsReady()) return;
+
             Vector3 myPos = Player.ServerPosition;
             Vector3 castPos;
 
             if (type == JumpType.ToCursor)
-                castPos = myPos - (myPos - Game.CursorPos).Normalized() * W.Range;
+                castPos = myPos - (myPos - Game.CursorPos).Normalized() * E.Range;
             else
-                castPos = myPos - (myPos - GetHomePos(Player.Team)).Normalized() * W.Range;
+                castPos = myPos - (myPos - GetHomePos(Player.Team)).Normalized() * E.Range;
 
-            W.Cast(castPos);
+            E.Cast(castPos);
             Utility.DelayAction.Add(600,
-                () => W.Cast(Game.CursorPos));
+                () => E.Cast(Game.CursorPos));
         }
 
         private static Vector3 GetHomePos(GameObjectTeam team)
