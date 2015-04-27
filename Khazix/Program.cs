@@ -86,16 +86,16 @@ namespace Khazix
 
             if (config.Item("JumpCursor").GetValue<KeyBind>().Active && E.IsReady())
             {
-                JumpExploit(JumpType.ToCursor, W);
+                JumpExploit(JumpType.ToCursor);
             }
 
             if (config.Item("JumpHome").GetValue<KeyBind>().Active && E.IsReady())
             {
-                JumpExploit(JumpType.ToHome, W);
+                JumpExploit(JumpType.ToHome);
             }
         }
 
-        private static void JumpExploit(JumpType type, Spell s)
+        private static void JumpExploit(JumpType type)
         {
             Vector3 myPos = Player.ServerPosition;
             Vector3 castPos;
@@ -105,9 +105,9 @@ namespace Khazix
             else
                 castPos = myPos - (myPos - GetHomePos(Player.Team)).Normalized() * s.Range;
 
-            s.Cast(castPos);
+            W.Cast(castPos);
             Utility.DelayAction.Add(600,
-                () => s.Cast(Game.CursorPos));
+                () => W.Cast(Game.CursorPos));
         }
 
         private static Vector3 GetHomePos(GameObjectTeam team)
