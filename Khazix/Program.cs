@@ -96,13 +96,13 @@ namespace Khazix
             if (!E.IsReady()) return;
 
             Vector3 myPos = Player.ServerPosition;
-            Vector3 castPos;
+            Vector3 castPos = myPos - (myPos - Game.CursorPos).Normalized() * E.Range;
 
-            if (type == JumpType.ToCursor)
+            /*if (type == JumpType.ToCursor)
                 castPos = myPos - (myPos - Game.CursorPos).Normalized() * E.Range;
             else
                 castPos = myPos - (myPos - GetHomePos(Player.Team)).Normalized() * E.Range;
-
+            */
             E.Cast(castPos);
             Utility.DelayAction.Add(600,
                 () => E.Cast(Game.CursorPos));
