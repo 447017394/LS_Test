@@ -54,11 +54,8 @@ namespace Khazix
             config.AddSubMenu(tsMenu);
 
             // Orbwalker
-            if (config.Item("UseOrbwalker").GetValue<bool>())
-            {
-                config.AddSubMenu(new Menu("Orbwalking", "Orbwalking"));
-                Orbwalker = new Orbwalking.Orbwalker(config.SubMenu("Orbwalking"));
-            }
+            config.AddSubMenu(new Menu("Orbwalking", "Orbwalking"));
+            Orbwalker = new Orbwalking.Orbwalker(config.SubMenu("Orbwalking"));
 
             // Keys
             var keys = config.AddSubMenu(new Menu("Keys", "Keys"));
