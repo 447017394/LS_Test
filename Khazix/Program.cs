@@ -130,7 +130,7 @@ namespace Khazix
             }
         }
 
-        private enum JumpType
+        private static enum JumpType
         {
             ToCursor = 0,
             ToHome = 1
