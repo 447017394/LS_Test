@@ -85,14 +85,10 @@ namespace Khazix
             if (Player.IsDead) return;
 
             if (config.Item("JumpCursor").IsActive())
-            {
                 Jump(JumpType.ToCursor);
-            }
 
             if (config.Item("JumpHome").IsActive())
-            {
                 Jump(JumpType.ToHome);
-            }
         }
 
         private static void Jump(JumpType type)
@@ -108,12 +104,8 @@ namespace Khazix
                 castPos = myPos - (myPos - GetHomePos(Player.Team)).Normalized() * E.Range;
 
             E.Cast(castPos);
-            if (type == JumpType.ToCursor)
-                Utility.DelayAction.Add(600,
-                    () => E.Cast(Game.CursorPos));
-            else
-                Utility.DelayAction.Add(600,
-                    () => E.Cast(GetHomePos(Player.Team)));
+            Utility.DelayAction.Add(600,
+                () => E.Cast(Game.CursorPos));
         }
 
         private static Vector3 GetHomePos(GameObjectTeam team)
