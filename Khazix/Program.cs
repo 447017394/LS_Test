@@ -20,6 +20,7 @@ namespace Khazix
 
         private static void Main(string[] args)
         {
+            Game.PrintChat("Load");
             CustomEvents.Game.OnGameLoad += Game_OnGameLoad;
         }
 
