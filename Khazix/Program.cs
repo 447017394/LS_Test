@@ -46,7 +46,7 @@ namespace Khazix
 
             Game.PrintChat("Load");
             // Root Menu
-            config = new Menu(Player.ChampionName, Player.ChampionName, true);
+            config = new Menu("Khazix", "Khazix", true);
 
             // Target Selector
             var tsMenu = new Menu("Target Selector", "Target Selector");
