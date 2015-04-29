@@ -14,7 +14,7 @@ namespace Khazix
         private static string Name = "Khazix";
         private static Obj_AI_Hero Player;
         private static Orbwalking.Orbwalker Orbwalker;
-        private static Spell Q, W, E, R, JumpSpell; // JumpSpell is WIP. Not using now.
+        private static Spell Q, W, E, R;
         private static SpellDataInst Qi, Wi, Ei, Ri;
         private static Menu config;
 
@@ -29,8 +29,6 @@ namespace Khazix
 
             if (Player.BaseSkinName != Name)
             {
-                Game.PrintChat("Only Support " + Name + ".");
-                CustomEvents.Game.OnGameLoad -= Game_OnGameLoad; // Clean It.
                 return;
             }
 
@@ -106,16 +104,13 @@ namespace Khazix
             if (!E.IsReady()) return;
 
             Vector3 myPos = Player.ServerPosition;
-            Vector3 castPos;
+            Vector3 cast = (type == JumpType.ToCursor) ? Game.CursorPos : GetHomePos(Player.Team);
 
-            if (type == JumpType.ToCursor)
-                castPos = myPos - (myPos - Game.CursorPos).Normalized() * E.Range;
-            else
-                castPos = myPos - (myPos - GetHomePos(Player.Team)).Normalized() * E.Range;
+            Vector3 castPos = myPos - (myPos - cast).Normalized() * E.Range;
 
             E.Cast(castPos);
             Utility.DelayAction.Add(600,
-                () => E.Cast(Game.CursorPos));
+                () => E.Cast(cast));
         }
 
         private static Vector3 GetHomePos(GameObjectTeam team)
