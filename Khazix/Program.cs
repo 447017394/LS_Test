@@ -28,8 +28,8 @@ namespace Khazix
         {
             Player = ObjectManager.Player;
 
-            //if (Player.BaseSkinName != Name)
-                //return;
+            if (Player.BaseSkinName != Name)
+                return;
 
             Qi = Player.Spellbook.GetSpell(SpellSlot.Q);
             Wi = Player.Spellbook.GetSpell(SpellSlot.W);
@@ -64,10 +64,10 @@ namespace Khazix
                 keys.AddItem(new MenuItem("JumpHome", "Jump To Home").SetValue(new KeyBind('G', KeyBindType.Press)));
             }
 
-            config.AddItem(new MenuItem("UseOrbwalker", "Use Orbwalker (Need Reload)").SetValue(true));
+            //config.AddItem(new MenuItem("UseOrbwalker", "Use Orbwalker (Need Reload)").SetValue(true));
+            // * WIP
 
             config.AddToMainMenu();
-            Game.PrintChat("Load");
 
             Game.OnUpdate += Game_OnUpdate;
             //Drawing.OnDraw += Drawing_OnDraw;
