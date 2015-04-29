@@ -44,7 +44,7 @@ namespace Khazix
             W.SetSkillshot(0.225f, 80f, 828.5f, true, SkillshotType.SkillshotLine);
             E.SetSkillshot(0.25f, 100f, 1000f, false, SkillshotType.SkillshotCircle);
 
-            #region Menu
+            Game.PrintChat("Load");
             // Root Menu
             config = new Menu(Player.ChampionName, Player.ChampionName, true);
 
@@ -70,7 +70,7 @@ namespace Khazix
             config.AddItem(new MenuItem("UseOrbwalker", "Use Orbwalker (Need Reload)").SetValue(true));
 
             config.AddToMainMenu();
-            #endregion Menu
+            Game.PrintChat("Load");
 
             Game.OnUpdate += Game_OnUpdate;
             //Drawing.OnDraw += Drawing_OnDraw;
