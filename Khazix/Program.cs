@@ -27,10 +27,8 @@ namespace Khazix
         {
             Player = ObjectManager.Player;
 
-            if (Player.BaseSkinName != Name)
-            {
-                return;
-            }
+            //if (Player.BaseSkinName != Name)
+                //return;
 
             Qi = Player.Spellbook.GetSpell(SpellSlot.Q);
             Wi = Player.Spellbook.GetSpell(SpellSlot.W);
@@ -74,7 +72,7 @@ namespace Khazix
             #endregion Menu
 
             Game.OnUpdate += Game_OnUpdate;
-            Drawing.OnDraw += Drawing_OnDraw;
+            //Drawing.OnDraw += Drawing_OnDraw;
 
             Game.PrintChat(Player.ChampionName + " Loaded.");
         }
