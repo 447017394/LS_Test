@@ -70,7 +70,7 @@ namespace Khazix
             config.AddToMainMenu();
 
             Game.OnUpdate += Game_OnUpdate;
-            //Drawing.OnDraw += Drawing_OnDraw;
+            Drawing.OnDraw += Drawing_OnDraw;
 
             Game.PrintChat(Player.ChampionName + " Loaded.");
         }
@@ -100,13 +100,20 @@ namespace Khazix
             if (!E.IsReady()) return;
 
             Vector3 myPos = Player.ServerPosition;
-            Vector3 cast = (type == JumpType.ToCursor) ? Game.CursorPos : GetHomePos(Player.Team);
+            Vector3 castPos;
 
-            Vector3 castPos = myPos - (myPos - cast).Normalized() * E.Range;
+            if (type == JumpType.ToCursor)
+                castPos = myPos - (myPos - Game.CursorPos).Normalized() * E.Range;
+            else
+                castPos = myPos - (myPos - GetHomePos(Player.Team)).Normalized() * E.Range;
 
             E.Cast(castPos);
-            Utility.DelayAction.Add(600,
-                () => E.Cast(cast));
+            if (type == JumpType.ToCursor)
+                Utility.DelayAction.Add(600,
+                    () => E.Cast(Game.CursorPos));
+            else
+                Utility.DelayAction.Add(600,
+                    () => E.Cast(GetHomePos(Player.Team)));
         }
 
         private static Vector3 GetHomePos(GameObjectTeam team)
