@@ -12,7 +12,7 @@ namespace Khazix
     class Program
     {
         private static string Name = "Khazix";
-        private static Obj_AI_Hero Player;
+        private static Obj_AI_Hero Player = ObjectManager.Player;
         private static Orbwalking.Orbwalker Orbwalker;
         private static Spell Q, W, E, R;
         private static SpellDataInst Qi, Wi, Ei, Ri;
@@ -20,7 +20,6 @@ namespace Khazix
 
         private static void Main(string[] args)
         {
-            Game.PrintChat("Load");
             CustomEvents.Game.OnGameLoad += Game_OnGameLoad;
         }
 
@@ -44,7 +43,6 @@ namespace Khazix
             W.SetSkillshot(0.225f, 80f, 828.5f, true, SkillshotType.SkillshotLine);
             E.SetSkillshot(0.25f, 100f, 1000f, false, SkillshotType.SkillshotCircle);
 
-            Game.PrintChat("Load");
             // Root Menu
             config = new Menu("Khazix", "Khazix", true);
 
@@ -54,25 +52,27 @@ namespace Khazix
             config.AddSubMenu(tsMenu);
 
             // Orbwalker
-            config.AddSubMenu(new Menu("Orbwalking", "Orbwalking"));
-            Orbwalker = new Orbwalking.Orbwalker(config.SubMenu("Orbwalking"));
+            if (config.Item("UseOrbwalker") == null || config.Item("UseOrbwalker").GetValue<bool>())
+            {
+                config.AddSubMenu(new Menu("Orbwalking", "Orbwalking"));
+                Orbwalker = new Orbwalking.Orbwalker(config.SubMenu("Orbwalking"));
+            }
 
             // Keys
             var keys = config.AddSubMenu(new Menu("Keys", "Keys"));
             {
-                keys.AddItem(new MenuItem("JumpCursor", "Jump To Cursor").SetValue(new KeyBind('T', KeyBindType.Press)));
+                keys.AddItem(new MenuItem("Jump", "Jump To Mouse").SetValue(new KeyBind('T', KeyBindType.Press)));
                 keys.AddItem(new MenuItem("JumpHome", "Jump To Home").SetValue(new KeyBind('G', KeyBindType.Press)));
             }
 
-            //config.AddItem(new MenuItem("UseOrbwalker", "Use Orbwalker (Need Reload)").SetValue(true));
-            // * WIP
+            config.AddItem(new MenuItem("UseOrbwalker", "Use Orbwalker (Need Reload)").SetValue(false));
 
             config.AddToMainMenu();
 
             Game.OnUpdate += Game_OnUpdate;
             Drawing.OnDraw += Drawing_OnDraw;
 
-            Game.PrintChat(Player.ChampionName + " Loaded.");
+            Game.PrintChat("Khazix Loaded.");
         }
 
         private static void Drawing_OnDraw(EventArgs args)
@@ -84,51 +84,19 @@ namespace Khazix
         {
             if (Player.IsDead) return;
 
-            if (config.Item("JumpCursor").IsActive())
-                Jump(JumpType.ToCursor);
-
-            if (config.Item("JumpHome").IsActive())
-                Jump(JumpType.ToHome);
+            if (config.Item("Jump").GetValue<KeyBind>().Active && E.IsReady())
+            {
+                JumpExploit();
+            }
         }
 
-        private static void Jump(JumpType type)
+        private static void JumpExploit()
         {
-            if (!E.IsReady()) return;
-
-            Vector3 myPos = Player.ServerPosition;
-            Vector3 castPos = myPos - (myPos - Game.CursorPos).Normalized() * E.Range;
-
-            /*if (type == JumpType.ToCursor)
-                castPos = myPos - (myPos - Game.CursorPos).Normalized() * E.Range;
-            else
-                castPos = myPos - (myPos - GetHomePos(Player.Team)).Normalized() * E.Range;
-            */
+            var myPos = Player.ServerPosition;
+            var castPos = myPos - (myPos - Game.CursorPos).Normalized() * E.Range;
             E.Cast(castPos);
             Utility.DelayAction.Add(600,
                 () => E.Cast(Game.CursorPos));
-        }
-
-        private static Vector3 GetHomePos(GameObjectTeam team)
-        {
-            if (team == GameObjectTeam.Order) // Blue Team
-            {
-                return new Vector3(396f, 462f, 182.1325f);
-            }
-            else if (team == GameObjectTeam.Chaos) // Red Team
-            {
-                return new Vector3(14340f, 14390f, 171.9777f);
-            }
-            else
-            {
-                Game.PrintChat("Unknown Team : " + team.ToString());
-                return new Vector3();
-            }
-        }
-
-        private enum JumpType
-        {
-            ToCursor = 0,
-            ToHome = 1
         }
 
         private static Spell NewSpell(SpellDataInst spell, bool IsChargedSkill = false)
